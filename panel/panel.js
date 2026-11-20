@@ -1,8 +1,8 @@
-// Panel de CTA-CONTROL · versión 2026-11-20a · David Martínez, 20/11/2026: «verlo desde mi compu o desde el cel».
-// Lee y guarda en la hoja CTA-CONTROL (su Apps Script). Solo entra un equipo maestro (clave maestra → ficha).
-// En este navegador se guardan solo la liga de CTA-CONTROL y la ficha; la clave maestra nunca.
+// Panel de APP-CONTROL · versión 2026-11-20b (antes se llamaba CTA-CONTROL) · David Martínez, 20/11/2026: «verlo desde mi compu o desde el cel».
+// Lee y guarda en la hoja APP-CONTROL (su Apps Script). Solo entra un equipo maestro (clave maestra → ficha).
+// En este navegador se guardan solo la liga de APP-CONTROL y la ficha; la clave maestra nunca.
 (function () {
-  const K = 'cta_control_panel';
+  const K = 'app_control_panel';
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const leerK = () => { try { return JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) { return {}; } };
@@ -14,11 +14,11 @@
   function aviso(t) { const a = $('aviso'); a.textContent = t; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(() => { a.hidden = true; }, 3500); }
 
   async function llamar(cuerpo) {
-    const k = leerK(); if (!k.url) return { ok: false, error: 'Falta la liga de CTA-CONTROL.' };
+    const k = leerK(); if (!k.url) return { ok: false, error: 'Falta la liga de APP-CONTROL.' };
     try {
       const r = await fetch(k.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ t: k.ficha || '' }, cuerpo)) });
       return await r.json();
-    } catch (e) { return { ok: false, error: 'Sin respuesta de CTA-CONTROL. Revisa tu internet o la liga.' }; }
+    } catch (e) { return { ok: false, error: 'Sin respuesta de APP-CONTROL. Revisa tu internet o la liga.' }; }
   }
 
   /* ---------- entrada ---------- */
@@ -31,7 +31,7 @@
   $('entrar').onclick = async () => {
     const url = $('url-control').value.trim(), clave = $('clave').value;
     const m = $('msg-entrada'); m.hidden = false; m.className = 'msg bien'; m.textContent = 'Revisando…';
-    if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)) { m.className = 'msg mal'; m.textContent = 'La liga debe ser la de CTA-CONTROL y terminar en /exec.'; return; }
+    if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)) { m.className = 'msg mal'; m.textContent = 'La liga debe ser la de APP-CONTROL y terminar en /exec.'; return; }
     if (!clave) { m.className = 'msg mal'; m.textContent = 'Escribe tu clave maestra.'; return; }
     guardarK({ url: url });
     const equipo = 'Panel · ' + ((navigator.userAgent.match(/\(([^)]+)\)/) || ['', 'equipo'])[1]).slice(0, 50);

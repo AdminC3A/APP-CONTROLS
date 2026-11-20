@@ -10,7 +10,7 @@ David Martínez, 20/11/2026: «unifica la forma de trabajar».
 ```
 | App | Menú | Repo |
 |---|---|---|
-| Control | ⚙ CTA-CONTROL | AdminC3A/APP-CONTROLS |
+| Control | ⚙ APP-CONTROL | AdminC3A/APP-CONTROLS |
 | Graficador | ⚙ CTA-GRAFICAR | AdminC3A/CTA-GRAFICAR |
 | Asistencias (+ Reportes) | ⚙ CTA-ASISTENCIAS | AdminC3A/CTA-ASISTENCIAS · AdminC3A/REPORTES |
 | Almacén | ⚙ CTA-ALMACÉN (al rehacerlo, etapa 2) | AdminC3A/EAI-CTA-ALMACEN |
@@ -31,10 +31,10 @@ David Martínez, 20/11/2026: «unifica la forma de trabajar».
 - Usuarios: separar **Usuario** (nombre que se ve) de **Acceso** (con qué entra).
 - Lo que borra pide confirmación en pantalla, nunca editando el código.
 
-## Conexiones (CTA-CONTROL)
-- Cada app toma su hoja de CTA-CONTROL con la **liga de instalación**; si no, usa la escrita en su config.
+## Conexiones (APP-CONTROL)
+- Cada app toma su hoja de APP-CONTROL con la **liga de instalación**; si no, usa la escrita en su config.
 - Solo los **equipos maestros** (clave maestra de David) ven **🔗 Conexiones**.
-- Si CTA-CONTROL no contesta, la app sigue con lo último guardado.
+- Si APP-CONTROL no contesta, la app sigue con lo último guardado.
 
 ## Plan completo
 Plan · Sistema de almacén multiobra y apps conectadas: https://claude.ai/artifact/4dM99TQL8CGWPQQmGZPUo2

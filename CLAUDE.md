@@ -1,5 +1,5 @@
 # APP-CONTROLS · nota para Claude
-Control central (CTA-CONTROL) de las apps de **David Martínez**. Hoja de Google en su Drive + `apps-script/Code.gs`.
+Control central (APP-CONTROL) de las apps de **David Martínez**. Hoja de Google en su Drive + `apps-script/Code.gs`.
 
 ## Reglas
 1. Rama `claude/<tema>` desde `main`, commit, push, PR (`gh api repos/AdminC3A/APP-CONTROLS/pulls --input pr.json`). **David hace el merge.**

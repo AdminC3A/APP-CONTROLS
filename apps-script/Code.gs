@@ -1,4 +1,4 @@
-/* CTA-CONTROL · versión 2026-11-20h
+/* APP-CONTROL · versión 2026-11-20i
    ============================================================
    CONTROL CENTRAL DE LAS APPS (Graficador, Asistencias, Reportes, Almacén, Calidad, Control presupuestal…)
    20b: la lista de apps vive en CONFIGURACIÓN › APPS: una app nueva se agrega ahí, sin tocar el código.
@@ -7,11 +7,12 @@
    20e: 🔑 CLAVE MAESTRA (David, 20/11/2026: «solo hay un admin para la app de control»): solo los equipos que la escribieron
         una vez ven el botón 🔗 Conexiones en las apps. La clave nunca se guarda en el equipo: se guarda una ficha
         (pestaña «Equipos maestros»); borrando su renglón ese equipo deja de ser maestro.
-   20f: Clientes › Aviso de pago = «No» → a ese cliente JAMÁS le sale el aviso de pago: CTA-CONTROL no le manda
+   20f: Clientes › Aviso de pago = «No» → a ese cliente JAMÁS le sale el aviso de pago: APP-CONTROL no le manda
         nada del pago a sus equipos (solo los equipos maestros de David lo siguen viendo).
-   20g: menú igual que en todas las apps: ⚙ CTA-CONTROL › Instalar / actualizar · ℹ Versión del código.
+   20g: menú igual que en todas las apps: ⚙ APP-CONTROL › Instalar / actualizar · ℹ Versión del código.
    20h: 🖥 PANEL (David: «verlo desde mi compu o desde el cel»): la página panel/ lee y guarda Clientes, Apps,
         Conexiones, Pagos y Equipos maestros. Todo lo del panel pide la ficha de un equipo maestro.
+   20i: se llama APP-CONTROL (antes CTA-CONTROL; David, 20/11/2026). Solo cambian los nombres que se ven.
    David Martínez · 20/11/2026
 
    Una sola hoja de Google en el Drive de David que dice:
@@ -24,17 +25,17 @@
    y difícil de adivinar). Nunca devuelve datos de otro cliente.
 
    CÓMO SE INSTALA (una sola vez) · igual que todas las apps
-     1. Crear una hoja de Google nueva en tu Drive y nombrarla «CTA-CONTROL».
+     1. Crear una hoja de Google nueva en tu Drive y nombrarla «APP-CONTROL».
      2. Extensiones › Apps Script › pegar este archivo completo › Guardar › cerrar esa pestaña.
-     3. Recargar la hoja (F5) › menú ⚙ CTA-CONTROL › Instalar / actualizar (la primera vez pide permisos).
+     3. Recargar la hoja (F5) › menú ⚙ APP-CONTROL › Instalar / actualizar (la primera vez pide permisos).
      4. Implementar › Nueva implementación › Aplicación web · Ejecutar como: Yo · Acceso: Cualquier usuario.
      5. Copiar la liga /exec y pegarla en CONFIGURACIÓN › URL_CONTROL.
    CÓMO SE ACTUALIZA (igual que todas las apps)
      Pegar el Code.gs nuevo › Implementar › Administrar implementaciones › ✏ › Nueva versión ›
-     en la hoja: ⚙ CTA-CONTROL › Instalar / actualizar.
+     en la hoja: ⚙ APP-CONTROL › Instalar / actualizar.
    ============================================================ */
 
-const VERSION = '2026-11-20h';
+const VERSION = '2026-11-20i';
 const ZONA = 'America/Mazatlan';
 const APPS_INICIAL = 'Graficador, Asistencias, Reportes, Almacén, Calidad, Control presupuestal';
 /* La lista vigente se lee de CONFIGURACIÓN › APPS (separadas por coma) */
@@ -69,7 +70,7 @@ function listas_() {   /* validaciones de la hoja: listas para escoger (la de ap
 
 /* ============================================================ MENÚ */
 function onOpen() {
-  SpreadsheetApp.getUi().createMenu('⚙ CTA-CONTROL')
+  SpreadsheetApp.getUi().createMenu('⚙ APP-CONTROL')
     .addItem('Instalar / actualizar', 'menuInstalar')
     .addItem('ℹ Versión del código', 'menuVersion')
     .addSeparator()
@@ -80,8 +81,8 @@ function onOpen() {
     .addToUi();
 }
 
-function menuInstalar() { const t = instalar(); try { SpreadsheetApp.getUi().alert('⚙ CTA-CONTROL', t + '\n\nSi pegaste una versión nueva, recuerda: Implementar › Administrar implementaciones › Nueva versión.', SpreadsheetApp.getUi().ButtonSet.OK); } catch (e) {} return t; }
-function menuVersion() { try { SpreadsheetApp.getUi().alert('ℹ Versión del código', 'CTA-CONTROL ' + VERSION, SpreadsheetApp.getUi().ButtonSet.OK); } catch (e) {} return VERSION; }
+function menuInstalar() { const t = instalar(); try { SpreadsheetApp.getUi().alert('⚙ APP-CONTROL', t + '\n\nSi pegaste una versión nueva, recuerda: Implementar › Administrar implementaciones › Nueva versión.', SpreadsheetApp.getUi().ButtonSet.OK); } catch (e) {} return t; }
+function menuVersion() { try { SpreadsheetApp.getUi().alert('ℹ Versión del código', 'APP-CONTROL ' + VERSION, SpreadsheetApp.getUi().ButtonSet.OK); } catch (e) {} return VERSION; }
 
 /* ============================================================ INSTALAR
    Crea lo que falte sin borrar nada: pestañas, encabezados, listas y configuración. */
@@ -107,7 +108,7 @@ function instalar() {
   if (h1 && h1.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(h1);
   generarClaves();
   bitacora_('Instalar', hechos.length ? hechos.join(' · ') : 'todo estaba en orden');
-  return 'CTA-CONTROL ' + VERSION + ' instalado. ' + (hechos.length ? 'Se agregó: ' + hechos.join(', ') : 'Todo estaba en orden.');
+  return 'APP-CONTROL ' + VERSION + ' instalado. ' + (hechos.length ? 'Se agregó: ' + hechos.join(', ') : 'Todo estaba en orden.');
 }
 
 /* Cada cliente sin clave recibe una nueva (24 caracteres al azar). Nunca cambia una que ya existe. */
@@ -203,7 +204,7 @@ function doGet(e) {
       return json_(bajaEquipo_(p.ficha, p.t));
     }
     return json_({ ok: false, error: 'Acción no reconocida.' });
-  } catch (err) { return json_({ ok: false, error: 'Error en CTA-CONTROL: ' + err.message }); }
+  } catch (err) { return json_({ ok: false, error: 'Error en APP-CONTROL: ' + err.message }); }
 }
 function doPost(e) {
   let b = {}; try { b = JSON.parse(e.postData.contents || '{}'); } catch (err) { return json_({ ok: false, error: 'Petición mal formada.' }); }
@@ -242,7 +243,7 @@ function maestra_(k, equipo, app) {
   const cache = CacheService.getScriptCache(), n = Number(cache.get('fallas_maestra') || 0);
   if (n >= 5) return { ok: false, error: 'Demasiados intentos. Espera 15 minutos.' };
   const buena = String(config_('CLAVE_MAESTRA') || '').trim();
-  if (!buena) return { ok: false, error: 'Falta escribir la CLAVE_MAESTRA en CTA-CONTROL › CONFIGURACIÓN.' };
+  if (!buena) return { ok: false, error: 'Falta escribir la CLAVE_MAESTRA en APP-CONTROL › CONFIGURACIÓN.' };
   if (String(k || '').trim() !== buena) { cache.put('fallas_maestra', String(n + 1), 900); bitacora_('Clave maestra', 'intento fallido · ' + String(equipo || '').slice(0, 60)); return { ok: false, error: 'Clave incorrecta.' }; }
   const ficha = claveNueva_(), h = libro_().getSheetByName('Equipos maestros');
   h.appendRow([ficha, new Date(), String(equipo || '').slice(0, 80), String(app || '').slice(0, 40)]);
