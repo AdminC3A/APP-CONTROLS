@@ -1,0 +1,3 @@
+# El panel se publica desde la carpeta panel/ (David: «verlo desde mi compu o desde el cel»).
+[build]
+  publish = "panel"

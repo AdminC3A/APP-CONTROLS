@@ -1,4 +1,4 @@
-/* CTA-CONTROL · versión 2026-11-20g
+/* CTA-CONTROL · versión 2026-11-20h
    ============================================================
    CONTROL CENTRAL DE LAS APPS (Graficador, Asistencias, Reportes, Almacén, Calidad, Control presupuestal…)
    20b: la lista de apps vive en CONFIGURACIÓN › APPS: una app nueva se agrega ahí, sin tocar el código.
@@ -10,6 +10,8 @@
    20f: Clientes › Aviso de pago = «No» → a ese cliente JAMÁS le sale el aviso de pago: CTA-CONTROL no le manda
         nada del pago a sus equipos (solo los equipos maestros de David lo siguen viendo).
    20g: menú igual que en todas las apps: ⚙ CTA-CONTROL › Instalar / actualizar · ℹ Versión del código.
+   20h: 🖥 PANEL (David: «verlo desde mi compu o desde el cel»): la página panel/ lee y guarda Clientes, Apps,
+        Conexiones, Pagos y Equipos maestros. Todo lo del panel pide la ficha de un equipo maestro.
    David Martínez · 20/11/2026
 
    Una sola hoja de Google en el Drive de David que dice:
@@ -32,7 +34,7 @@
      en la hoja: ⚙ CTA-CONTROL › Instalar / actualizar.
    ============================================================ */
 
-const VERSION = '2026-11-20g';
+const VERSION = '2026-11-20h';
 const ZONA = 'America/Mazatlan';
 const APPS_INICIAL = 'Graficador, Asistencias, Reportes, Almacén, Calidad, Control presupuestal';
 /* La lista vigente se lee de CONFIGURACIÓN › APPS (separadas por coma) */
@@ -194,6 +196,12 @@ function doGet(e) {
     if (p.accion === 'version') return json_({ ok: true, version: VERSION });
     if (p.accion === 'conexion') return json_(conexion_(p.c, p.app, p.obra, p.t));
     if (p.accion === 'maestra') return json_(maestra_(p.k, p.equipo, p.app));
+    if (p.accion === 'panel' || p.accion === 'guardar' || p.accion === 'baja_equipo') {
+      if (!esFicha_(p.t)) return json_({ ok: false, error: 'Este equipo no es maestro. Entra con tu clave maestra.', sinFicha: true });
+      if (p.accion === 'panel') return json_(panel_());
+      if (p.accion === 'guardar') return json_(guardar_(p.hoja, p.datos, p.t));
+      return json_(bajaEquipo_(p.ficha, p.t));
+    }
     return json_({ ok: false, error: 'Acción no reconocida.' });
   } catch (err) { return json_({ ok: false, error: 'Error en CTA-CONTROL: ' + err.message }); }
 }
@@ -242,6 +250,60 @@ function maestra_(k, equipo, app) {
   return { ok: true, ficha: ficha };
 }
 function esFicha_(f) { f = String(f || '').trim(); return f.length >= 16 && leer_('Equipos maestros').some(function (r) { return String(r['Ficha']).trim() === f; }); }
+
+/* ============================================================ 🖥 PANEL
+   Todo pide ficha de equipo maestro (se revisa en doGet). */
+const LLAVES = { Clientes: ['Cliente'], Apps: ['Cliente', 'App'], Conexiones: ['Cliente', 'Obra', 'App'] };   /* Pagos: siempre renglón nuevo */
+function panel_() {
+  const hoy = new Date(), apps = leer_('Apps').filter(function (a) { return a['Cliente'] && a['App']; });
+  const fecha = function (o) { const c = {}; Object.keys(o).forEach(function (k) { const v = o[k]; c[k] = Object.prototype.toString.call(v) === '[object Date]' ? Utilities.formatDate(v, ZONA, 'yyyy-MM-dd') : v; }); return c; };
+  return {
+    ok: true, version: VERSION, apps: apps_(), url: String(config_('URL_CONTROL') || ''), diasGracia: num_(config_('DIAS_GRACIA'), 5),
+    clientes: leer_('Clientes').filter(function (r) { return r['Cliente']; }).map(fecha),
+    appsCliente: apps.map(function (a) { const o = fecha(a); o.estado = estadoApp_(a['Cliente'], a['App'], hoy); return o; }),
+    conexiones: leer_('Conexiones').filter(function (r) { return r['Cliente']; }).map(fecha),
+    pagos: leer_('Pagos').filter(function (r) { return r['Cliente']; }).map(fecha).reverse(),
+    equipos: leer_('Equipos maestros').filter(function (r) { return r['Ficha']; }).map(function (r) { const f = String(r['Ficha']); return { ficha: f, fin: f.slice(-4), alta: fecha(r)['Alta'], equipo: r['Equipo'], app: r['App'] }; })
+  };
+}
+function guardar_(nombre, datos, ficha) {
+  if (typeof datos === 'string') { try { datos = JSON.parse(datos); } catch (e) { datos = null; } }
+  if (!datos || typeof datos !== 'object') return { ok: false, error: 'Faltan los datos.' };
+  if (['Clientes', 'Apps', 'Conexiones', 'Pagos'].indexOf(nombre) < 0) return { ok: false, error: 'Esa pestaña no se edita desde el panel.' };
+  const h = libro_().getSheetByName(nombre); if (!h) return { ok: false, error: 'Falta la pestaña ' + nombre + '. Corre ⚙ Instalar / actualizar.' };
+  const enc = h.getRange(1, 1, 1, h.getLastColumn()).getValues()[0].map(String);
+  const limpio = {}; enc.forEach(function (c) { if (c in datos && c !== 'Clave') limpio[c] = typeof datos[c] === 'string' ? datos[c].trim() : datos[c]; });
+  ['Prueba hasta', 'Pagado hasta', 'Fecha'].forEach(function (c) { if (limpio[c]) { const f = aFecha_(limpio[c]); limpio[c] = f || limpio[c]; } });
+  const ll = LLAVES[nombre];
+  if (ll && ll.some(function (k) { return k !== 'Obra' && !String(limpio[k] || '').trim(); })) return { ok: false, error: 'Falta ' + ll.join(' / ') + '.' };
+  if (nombre === 'Pagos') {
+    if (!limpio['Cliente'] || !limpio['Pagado hasta']) return { ok: false, error: 'Falta el cliente o «pagado hasta».' };
+    if (!limpio['Fecha']) limpio['Fecha'] = new Date();
+    h.appendRow(enc.map(function (c) { return c in limpio ? limpio[c] : ''; }));
+    bitacora_('Panel · pago', limpio['Cliente'] + ' · ' + (limpio['App'] || '') + ' · hasta ' + fmt_(aFecha_(limpio['Pagado hasta']) || new Date()));
+    return { ok: true };
+  }
+  const v = h.getLastRow() > 1 ? h.getRange(2, 1, h.getLastRow() - 1, enc.length).getValues() : [];
+  const idx = v.findIndex(function (r) { return ll.every(function (k) { return igual_(r[enc.indexOf(k)], limpio[k] || ''); }); });
+  if (idx >= 0) {
+    Object.keys(limpio).forEach(function (c) { if (ll.indexOf(c) < 0) h.getRange(idx + 2, enc.indexOf(c) + 1).setValue(limpio[c]); });   /* las llaves (cliente, obra, app) se quedan como estaban escritas */
+    if (nombre === 'Conexiones' && enc.indexOf('Actualizó') >= 0) h.getRange(idx + 2, enc.indexOf('Actualizó') + 1).setValue(new Date());
+  } else {
+    if (nombre === 'Conexiones') limpio['Actualizó'] = new Date();
+    h.appendRow(enc.map(function (c) { return c in limpio ? limpio[c] : ''; }));
+  }
+  if (nombre === 'Clientes') generarClaves();
+  bitacora_('Panel · ' + nombre, ll.map(function (k) { return limpio[k] || '—'; }).join(' · ') + (idx >= 0 ? ' (cambio)' : ' (nuevo)'));
+  return { ok: true, nuevo: idx < 0 };
+}
+function bajaEquipo_(fin, ficha) {
+  const h = libro_().getSheetByName('Equipos maestros'); if (!h || h.getLastRow() < 2) return { ok: false, error: 'No hay equipos.' };
+  const v = h.getRange(2, 1, h.getLastRow() - 1, 1).getValues(), i = v.findIndex(function (r) { return String(r[0]).trim() === String(fin || '').trim(); });
+  if (i < 0) return { ok: false, error: 'Ese equipo ya no está.' };
+  if (String(fin).trim() === String(ficha).trim()) return { ok: false, error: 'No puedes dar de baja el equipo con el que estás entrando.' };
+  h.deleteRow(i + 2); bitacora_('Panel · equipo maestro', 'baja de un equipo');
+  return { ok: true };
+}
 
 /* ============================================================ AYUDANTES */
 function libro_() { return SpreadsheetApp.getActiveSpreadsheet(); }

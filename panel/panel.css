@@ -1,0 +1,60 @@
+/* Panel de CTA-CONTROL · versión 2026-11-20a */
+:root { --azul: #1F3864; --borde: #d8dde5; --fondo: #f4f6f9; --tinta: #1d2430; --mut: #667085;
+        --verde: #1E6B2E; --verde-f: #D9EAD3; --ambar: #8A6100; --ambar-f: #FFF2CC; --rojo: #A50E0E; --rojo-f: #F4CCCC; --gris-f: #EFEFEF; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--fondo); color: var(--tinta); }
+.mut { color: var(--mut); }
+.esp { flex: 1; }
+button { font: inherit; padding: 9px 14px; border: none; border-radius: 8px; background: var(--azul); color: #fff; cursor: pointer; }
+button.sec { background: #e7eaf0; color: var(--tinta); }
+button.peq { padding: 5px 9px; font-size: 13px; }
+button:disabled { opacity: .5; cursor: default; }
+input, select, textarea { font: inherit; width: 100%; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; color: var(--tinta); }
+label { display: block; font-size: 13px; color: var(--mut); margin-bottom: 10px; }
+label input, label select, label textarea { margin-top: 3px; }
+
+.barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--azul); color: #fff; }
+.barra h1 { margin: 0; font-size: 18px; }
+.barra .mut { color: #c9d3e6; font-size: 13px; }
+.barra button { background: rgba(255,255,255,.15); }
+.barra button.sec { background: rgba(255,255,255,.9); color: var(--azul); }
+
+.caja { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 16px; margin: 16px; }
+.entrada { max-width: 440px; margin: 40px auto; }
+.entrada h2 { margin-top: 0; }
+
+.pestanas { display: flex; gap: 6px; padding: 10px 16px 0; overflow-x: auto; }
+.pestanas button { background: #fff; color: var(--tinta); border: 1px solid var(--borde); white-space: nowrap; }
+.pestanas button.on { background: var(--azul); color: #fff; border-color: var(--azul); }
+main { padding: 0 0 40px; }
+
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 16px; }
+.tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 12px; }
+.tarjeta b { display: block; font-size: 26px; }
+.lista { margin: 16px; display: grid; gap: 10px; }
+.fila { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; }
+.fila h3 { margin: 0 0 6px; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fila .acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; padding: 3px 9px; border-radius: 999px; background: var(--gris-f); }
+.chip.sin_cobro, .chip.al_corriente, .chip.prueba { background: var(--verde-f); color: var(--verde); }
+.chip.por_vencer, .chip.gracia { background: var(--ambar-f); color: var(--ambar); }
+.chip.vencido { background: var(--rojo-f); color: var(--rojo); }
+.liga { font-size: 12px; color: var(--mut); word-break: break-all; }
+
+.forma { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0 12px; }
+.forma .todo { grid-column: 1 / -1; }
+.forma .botones { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+.titulo { display: flex; align-items: center; gap: 10px; margin: 16px 16px 0; }
+.titulo h2 { margin: 0; font-size: 18px; }
+
+.msg { margin-top: 10px; padding: 8px 10px; border-radius: 8px; font-size: 14px; }
+.msg.bien { background: var(--verde-f); color: var(--verde); }
+.msg.mal { background: var(--rojo-f); color: var(--rojo); }
+.aviso { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); max-width: calc(100% - 32px); background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 20; }
+.vacio { margin: 16px; color: var(--mut); }
+
+@media (max-width: 560px) {
+  .barra h1 { font-size: 16px; }
+  .caja, .lista, .tarjetas { margin: 12px; }
+}
