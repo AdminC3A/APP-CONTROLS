@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CTA-CONTROL · Panel</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+<!-- Panel de CTA-CONTROL · versión 2026-11-20a · David Martínez: «verlo desde mi compu o desde el cel» -->
+<header class="barra">
+  <h1>🧭 CTA-CONTROL</h1>
+  <span id="estado" class="mut"></span>
+  <span class="esp"></span>
+  <button type="button" id="recargar" hidden title="Volver a leer la hoja">↻</button>
+  <button type="button" id="salir" class="sec" hidden>Salir</button>
+</header>
+
+<!-- Entrada: solo con la clave maestra -->
+<section id="entrada" class="caja entrada">
+  <h2>Entrar</h2>
+  <p class="mut">Solo con tu clave maestra. Este equipo queda dado de alta como maestro.</p>
+  <label>Liga de CTA-CONTROL (termina en /exec)<input type="url" id="url-control" placeholder="https://script.google.com/macros/s/…/exec"></label>
+  <label>Clave maestra<input type="password" id="clave" autocomplete="current-password"></label>
+  <button type="button" id="entrar">Entrar</button>
+  <div id="msg-entrada" class="msg" hidden></div>
+</section>
+
+<nav id="pestanas" class="pestanas" hidden>
+  <button type="button" data-p="resumen" class="on">💳 Resumen</button>
+  <button type="button" data-p="clientes">🏢 Clientes</button>
+  <button type="button" data-p="apps">🧩 Apps</button>
+  <button type="button" data-p="conexiones">🔗 Conexiones</button>
+  <button type="button" data-p="pagos">💰 Pagos</button>
+  <button type="button" data-p="equipos">🔑 Equipos</button>
+</nav>
+<main id="vista"></main>
+<div id="aviso" class="aviso" hidden></div>
+
+<script src="panel.js"></script>
+</body>
+</html>

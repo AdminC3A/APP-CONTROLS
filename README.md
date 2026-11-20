@@ -23,6 +23,13 @@ Las apps le preguntan a CTA-CONTROL «¿a qué hoja me conecto y estoy al corrie
 4. **Implementar › Nueva implementación › Aplicación web** · Ejecutar como: Yo · Acceso: Cualquier usuario.
 5. Copiar la liga `/exec` y pegarla en **CONFIGURACIÓN › URL_CONTROL**. Escribir la **CLAVE_MAESTRA**.
 
+## 🖥 Panel (compu o celular)
+La carpeta `panel/` es una página para manejar todo sin abrir la hoja: resumen de pagos, clientes, apps, conexiones
+(con su liga de instalación para copiar o mandar por WhatsApp), pagos y equipos maestros. Entra solo con la clave maestra.
+
+**Publicarlo en tu Netlify (una sola vez):** Netlify › Add new site › Import an existing project › GitHub ›
+AdminC3A/APP-CONTROLS › Deploy (ya sabe que la página está en `panel/` por `netlify.toml`). Cada merge a `main` lo actualiza solo.
+
 ## Actualizar
 Igual que todas las apps → [docs/FORMA_DE_TRABAJAR.md](docs/FORMA_DE_TRABAJAR.md).
 
